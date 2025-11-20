@@ -30,7 +30,7 @@ function HomepageHeader() {
         <Heading as="h3" className="hero__title">
           Pandu Hakam
         </Heading>
-        <p className="hero__subtitle">Experienced Network & System Administrator, <br></br>skilled in various Linux distributions, automation, and IT infrastructure.</p>
+        <p className="hero__subtitle">Experienced Network & System Administrator, skilled in various Linux distributions, automation, and IT infrastructure.</p>
 
         <div className={styles.iconButtons}>
           <a

@@ -34,6 +34,19 @@
   --docusaurus-highlighted-code-line-bg: rgba(143, 188, 187, 0.10);
 }
 
+.hero__title {
+  font-size: 2rem !important;    
+  line-height: 1.2;
+}
+
+.hero__subtitle {
+  font-size: 1.1rem !important;
+  line-height: 1.6;
+  width: 50% !important;
+  margin: 1rem auto 0;        /* top margin and center horizontally */
+  text-align: center;         /* center the text within the block */
+}
+
 footer .col,
 footer .col--6 {
   flex: none !important;
@@ -71,8 +84,16 @@ footer .footer__link-item a {
   text-decoration: none;
 }
 
-/* Larger screens: auto-fit columns */
-@media (min-width: 640px) {
+@media (max-width: 640px) {
+  .hero__title {
+    font-size: 1.6rem !important;
+  }
+  
+  .hero__subtitle {
+    font-size: 1.1rem !important;
+    width: 90% !important;
+  }
+
   footer .footer__links {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
     gap: 1rem !important;

@@ -1,0 +1,7 @@
+{
+  "label": "User Management",
+  "link": {
+    "type": "generated-index",
+    "description": "User management controls local identities, group membership, and permissions enforcement on a Linux system."
+  }
+}

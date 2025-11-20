@@ -1,0 +1,7 @@
+{
+  "label": "Disk and Filesystems",
+  "link": {
+    "type": "generated-index",
+    "description": "Disk and filesystem management covers physical storage, logical volumes, mount points, inode structures, and swap configuration. These operations ensure reliable data access and controlled allocation of block devices."
+  }
+}

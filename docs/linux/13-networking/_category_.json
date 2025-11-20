@@ -1,0 +1,7 @@
+{
+  "label": "Networking",
+  "link": {
+    "type": "generated-index",
+    "description": "Linux networking covers packet flow from link-layer frames to application protocols, using kernel networking stacks, routing tables, and user-space tools."
+  }
+}

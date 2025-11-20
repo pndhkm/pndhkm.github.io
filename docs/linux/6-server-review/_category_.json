@@ -1,0 +1,7 @@
+{
+  "label": "Server Review",
+  "link": {
+    "type": "generated-index",
+    "description": "A server review verifies operational health by checking system uptime/load, authentication activity, running services, and available memory/disk. These checks help detect performance issues, unauthorized access attempts, and resource exhaustion."
+  }
+}

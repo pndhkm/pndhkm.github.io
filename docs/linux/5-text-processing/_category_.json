@@ -1,0 +1,7 @@
+{
+  "label": "Text Processing",
+  "link": {
+    "type": "generated-index",
+    "description": "Linux provides many tools for reading, filtering, and modifying text data directly from the command line. These tools are essential for analyzing log files, configuration files, or large datasets."
+  }
+}

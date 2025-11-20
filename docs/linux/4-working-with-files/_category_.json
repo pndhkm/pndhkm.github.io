@@ -1,0 +1,7 @@
+{
+  "label": "Working with Files",
+  "link": {
+    "type": "generated-index",
+    "description": "This section explains how to manage files in Linux, including permissions, copying data, compressing files, and using links."
+  }
+}

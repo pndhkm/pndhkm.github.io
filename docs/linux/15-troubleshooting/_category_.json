@@ -1,0 +1,7 @@
+{
+  "label": "Troubleshooting",
+  "link": {
+    "type": "generated-index",
+    "description": "Network and system troubleshooting involves identifying, isolating, and resolving issues in connectivity, performance, and services. Key tools include ICMP utilities, socket analysis, and packet inspection. Understanding each tool and its output is essential for accurate diagnosis."
+  }
+}

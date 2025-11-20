@@ -1,0 +1,7 @@
+{
+  "label": "CoreDNS with ASN Lookup",
+  "link": {
+    "type": "generated-index",
+    "description": "A CoreDNS plugin for ASN-based DNS resolution, directing users to specific IPs based on their ISP's ASN."
+  }
+}

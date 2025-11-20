@@ -1,0 +1,7 @@
+{
+  "label": "Process Management Essentials",
+  "link": {
+    "type": "generated-index",
+    "description": "Process management controls creation, execution, monitoring, and termination of processes in Unix-like systems."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "label": "Service Management",
+  "link": {
+    "type": "generated-index",
+    "description": "This section covers managing services on a Linux system using systemd."
+  }
+}

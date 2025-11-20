@@ -1,0 +1,7 @@
+{
+  "label": "Editing Files",
+  "link": {
+    "type": "generated-index",
+    "description": "This section covers various text editors available on Linux systems, including command-line editors like Vim and Nano, as well as graphical editors like Gedit and VSCode. It provides guidance on how to create, edit, and save files using these tools."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "label": "Package Management Basics",
+  "link": {
+    "type": "generated-index",
+    "description": "Package management controls software installation, updates, and removal using system repositories and package tools."
+  }
+}

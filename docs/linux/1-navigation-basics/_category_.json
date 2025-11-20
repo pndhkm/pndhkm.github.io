@@ -1,0 +1,7 @@
+{
+  "label": "Navigation Basics",
+  "link": {
+    "type": "generated-index",
+    "description": "This section covers the fundamental navigation commands and techniques in a Linux environment, including file system structure, command line basics, and essential commands for moving around and managing files."
+  }
+}

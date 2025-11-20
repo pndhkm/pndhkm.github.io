@@ -1,0 +1,7 @@
+{
+  "label": "Booting",
+  "link": {
+    "type": "generated-index",
+    "description": "Linux booting initializes hardware, loads the kernel, mounts the root filesystem, and starts user space. Bootloaders manage kernel selection, and logs provide diagnostics for each stage."
+  }
+}

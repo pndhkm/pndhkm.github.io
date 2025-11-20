@@ -1,0 +1,7 @@
+{
+  "label": "Containerization",
+  "link": {
+    "type": "generated-index",
+    "description": "Containerization is a lightweight form of virtualization that allows applications to run in isolated user-space environments while sharing the same host kernel. It provides resource isolation, portability, and consistent runtime environments. Key components include container engines, runtimes, kernel resource controls (cgroups), and system limits (ulimits)."
+  }
+}

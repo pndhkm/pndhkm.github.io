@@ -1,0 +1,11 @@
+pandu:
+  name: Pandu Hakam
+  title: System Administrator
+  url: https://paha.my.id
+  image_url: /img/my-1x1.jpg
+  page:
+    # customize the url of the author page at /blog/authors/<permalink>
+    permalink: '/pandu-hakam-articles'
+  socials:
+    linkedin: panduhakam
+    github: pndhkm

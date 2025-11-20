@@ -1,0 +1,7 @@
+{
+  "label": "Shell Programming",
+  "link": {
+    "type": "generated-index",
+    "description": "Shell programming is writing scripts for Unix/Linux shells to automate tasks, manipulate files, manage processes, and perform system administration. It supports variables, control flow, loops, and debugging. Bourne shell (`sh`), Bash (`bash`), and POSIX shells are commonly used."
+  }
+}

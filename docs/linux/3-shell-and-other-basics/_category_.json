@@ -1,0 +1,7 @@
+{
+  "label": "Shell and Other Basics",
+  "link": {
+    "type": "generated-index",
+    "description": "The shell is a command-line interface that allows users to interact with the Linux operating system. It interprets user commands and executes them."
+  }
+}

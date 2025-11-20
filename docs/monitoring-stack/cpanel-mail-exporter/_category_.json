@@ -1,0 +1,7 @@
+{
+  "label": "cPanel Mail Exporter",
+  "link": {
+    "type": "generated-index",
+    "description": "cPanel Mail Exporter is a tool that fetches email logs from a WHM/cPanel server and exposes them as Prometheus metrics."
+  }
+}

@@ -67,7 +67,7 @@ const config: Config = {
         {to: '/blog', label: 'Blog', position: 'left'},
         {to: '/projects', label: 'Projects', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/pndhkm',
           label: 'GitHub',
           position: 'right',
         },

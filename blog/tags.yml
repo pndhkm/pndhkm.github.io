@@ -1,19 +1,34 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+linux:
+  label: Linux
+  permalink: /tags/linux
+  description: Articles related to Linux systems, administration, and tooling.
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+basic:
+  label: Basic
+  permalink: /tags/basic
+  description: Introductory technical topics and beginner-level concepts.
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+dns:
+  label: DNS
+  permalink: /tags/dns
+  description: Topics covering DNS protocols, servers, debugging, and configuration.
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+archive:
+  label: Archive
+  permalink: /tags/archive
+  description: Old or legacy posts preserved for reference.
+
+prometheus:
+  label: Prometheus
+  permalink: /tags/prometheus
+  description: Guides and configurations for Prometheus metrics and exporters.
+
+grafana:
+  label: Grafana
+  permalink: /tags/grafana
+  description: Dashboards, visualization work, and Grafana integrations.
+
+monitoring:
+  label: Monitoring
+  permalink: /tags/monitoring
+  description: System observability, metrics collection, and monitoring stacks.

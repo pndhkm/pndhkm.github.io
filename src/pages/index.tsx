@@ -27,7 +27,7 @@ function HomepageHeader() {
           }}
         />
 
-        <Heading as="h1" className="hero__title">
+        <Heading as="h3" className="hero__title">
           Pandu Hakam
         </Heading>
         <p className="hero__subtitle">Experienced Network & System Administrator, <br></br>skilled in various Linux distributions, automation, and IT infrastructure.</p>

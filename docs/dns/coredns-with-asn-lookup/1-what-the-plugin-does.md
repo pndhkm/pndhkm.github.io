@@ -1,4 +1,5 @@
 # What the Plugin Does
+## Architecture
 
 ```
                          +--------------------------+

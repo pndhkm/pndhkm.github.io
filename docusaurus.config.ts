@@ -83,6 +83,10 @@ const config: Config = {
               label: 'Tutorial',
               to: '/docs/intro',
             },
+            {
+              label: 'GitHub',
+              href: 'https://github.com/pndhkm',
+            },
           ],
         },
         {
@@ -93,8 +97,8 @@ const config: Config = {
               to: '/blog',
             },
             {
-              label: 'GitHub',
-              href: 'https://github.com/pndhkm',
+              label: 'Projects',
+              to: '/projects',
             },
           ],
         },

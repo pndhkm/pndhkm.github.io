@@ -1,0 +1,8 @@
+{
+  "label": "SQLite",
+  "link": {
+    "type": "generated-index",
+    "description": "SQLite is a self-contained, serverless, and lightweight relational database management system that is widely used for embedded applications and small to medium-sized projects."
+  }
+}
+

@@ -105,7 +105,7 @@ SELECT * FROM barang WHERE nama LIKE '%K';
 Output:
 
 ```
-X900|Speaker|5|800000
+A777|Harddisk|20|900000
 ```
 
 This finds names ending with K.

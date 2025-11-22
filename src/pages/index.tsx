@@ -15,7 +15,7 @@ function HomepageHeader() {
 
         {/* Avatar */}
         <img
-          src="/img/my-1x1.jpg"
+          src="/img/my-1x1-converted.jpg"
           alt="Avatar"
           className={styles.avatar}
           style={{

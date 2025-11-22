@@ -39,7 +39,7 @@ html[data-theme="light"] .bg-tech {
   background-image:
     linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(135deg, #E0EEF2, #A7CED7, #7EB6C0, #303846);
+    linear-gradient(135deg, #E0EEF2, #e3e3e3, #c9cbcbd1, #555555de);
   background-size: 40px 40px, 40px 40px, cover;
   color: #2E3440 !important;
   transition: background 0.3s ease;
@@ -59,8 +59,8 @@ html[data-theme="dark"] .bg-tech {
   
 html[data-theme="light"] .bg-tech,
 html[data-theme="light"] .bg-tech * {
-  --ifm-hero-text-color: #0A1A24 !important;
-  color: #0A1A24 !important;
+  --ifm-hero-text-color: #304152 !important;
+  color: #304152 !important;
 }
 
 html[data-theme="dark"] .bg-tech,
@@ -70,7 +70,7 @@ html[data-theme="dark"] .bg-tech * {
 }
 
 html[data-theme="light"] .bg-tech svg {
-  fill: #0A1A24 !important;
+  fill: #0a87a1 !important;
 }
 
 html[data-theme="dark"] .bg-tech svg {

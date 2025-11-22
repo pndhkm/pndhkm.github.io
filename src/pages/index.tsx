@@ -10,7 +10,7 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
   return (
-    <header className={clsx('hero hero--dark', styles.heroBanner)}>
+    <header className={clsx('hero bg-tech', styles.heroBanner)}>
       <div className="container">
 
         {/* Avatar */}
@@ -28,9 +28,11 @@ function HomepageHeader() {
         />
 
         <Heading as="h3" className="hero__title">
-          Pandu Hakam
+          Hello, I’m Pandu Hakam
         </Heading>
-        <p className="hero__subtitle">Experienced Network & System Administrator, skilled in various Linux distributions, automation, and IT infrastructure.</p>
+        <p className="hero__subtitle">
+          Network & System Administrator with experience in Linux systems, automation, and IT infrastructure.
+        </p>
 
         <div className={styles.iconButtons}>
           <a
@@ -55,7 +57,7 @@ function HomepageHeader() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaGithub size={28} />
+            <FaGithub size={28} color="0699b8"/>
           </a>
         </div>
       </div>

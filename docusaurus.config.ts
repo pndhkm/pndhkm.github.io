@@ -53,10 +53,10 @@ const config: Config = {
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
       title: 'Pandu Hakam',
-      logo: {
-        alt: 'My Site Logo',
-        src: 'img/my-1x1.jpg',
-      },
+      // logo: {
+      //   alt: 'My Site Logo',
+      //   src: 'img/my-1x1.jpg',
+      // },
       items: [
         {
           type: 'docSidebar',

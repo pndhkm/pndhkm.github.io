@@ -34,6 +34,50 @@
   --docusaurus-highlighted-code-line-bg: rgba(143, 188, 187, 0.10);
 }
 
+html[data-theme="light"] .bg-tech {
+  background-color: #ECEFF4;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(135deg, #E0EEF2, #A7CED7, #7EB6C0, #303846);
+  background-size: 40px 40px, 40px 40px, cover;
+  color: #2E3440 !important;
+  transition: background 0.3s ease;
+}
+  
+  
+html[data-theme="dark"] .bg-tech {
+  background-color: #0A1A24;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(135deg, #0A1A24, #1C5E60, #303846, #123D3E);
+  background-size: 40px 40px, 40px 40px, cover;
+  color: #ECEFF4 !important;
+  transition: background 0.3s ease;
+}
+  
+html[data-theme="light"] .bg-tech,
+html[data-theme="light"] .bg-tech * {
+  --ifm-hero-text-color: #0A1A24 !important;
+  color: #0A1A24 !important;
+}
+
+html[data-theme="dark"] .bg-tech,
+html[data-theme="dark"] .bg-tech * {
+  --ifm-hero-text-color: #fff !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .bg-tech svg {
+  fill: #0A1A24 !important;
+}
+
+html[data-theme="dark"] .bg-tech svg {
+  fill: #00506a !important;
+}
+  
+  
 .hero__title {
   font-size: 2rem !important;    
   line-height: 1.2;
@@ -43,8 +87,8 @@
   font-size: 1.1rem !important;
   line-height: 1.6;
   width: 50% !important;
-  margin: 1rem auto 0;        /* top margin and center horizontally */
-  text-align: center;         /* center the text within the block */
+  margin: 1rem auto 0;        
+  text-align: center;        
 }
 
 footer .col,

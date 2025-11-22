@@ -39,3 +39,5 @@ Input:
 ```
 sudo chmod +x /usr/local/bin/coredns
 ```
+
+---

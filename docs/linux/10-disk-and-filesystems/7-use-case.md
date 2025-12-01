@@ -1,5 +1,6 @@
 
-# Configuring Persistent Storage
+# Use Case
+## Configuring Persistent Storage
 
 Mounting /dev/vdb to /home/example/jetbackup5 
 

@@ -1,0 +1,8 @@
+{
+  "label": "PowerDNS Server and PowerDNS-Admin",
+  "link": {
+    "type": "generated-index",
+    "description": "PowerDNS is a DNS server supporting multiple backends (MySQL, PostgreSQL, etc.). PowerDNS-Admin provides a web interface to manage PDNS zones using its API and database."
+  }
+}
+

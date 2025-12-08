@@ -1,11 +1,9 @@
-
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Reset MySQL Root Password Using Skip-Grant-Tables
 
 Resetting the root password through `skip-grant-tables` allows access without authentication, so you can update the internal `mysql.user` table even when normal password methods fail.
-
-:::info Tested with MySQL 5.7 / MySQL 8.x
-:::
 
 ## Table of key options
 
@@ -82,12 +80,25 @@ This reloads privilege tables.
 
 ## Set a new root password (legacy method)
 
-The legacy `PASSWORD()` function is still available on some MySQL 5.7 and upgraded 8.x systems.
+<Tabs>
+  <TabItem value="set-passowrd" label="With Set Password" default>
+    The legacy `PASSWORD()` function is still available on some MySQL 5.7 and upgraded 8.x systems.
 
-Input:
-```sql
-SET PASSWORD FOR 'root'@'localhost' = PASSWORD('!Your!New!Password!');
-```
+    Input:
+    ```sql
+    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('!Your!New!Password!');
+    ```
+
+  </TabItem>
+  <TabItem value="alter-user" label="With Alter User">
+    Input:
+    ```sql
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '!Your!New!Password!';
+    ```
+  </TabItem>
+</Tabs>
+
+
 
 Output:
 ```

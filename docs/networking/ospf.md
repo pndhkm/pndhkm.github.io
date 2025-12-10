@@ -28,6 +28,7 @@ We will create a custom area name instead of the default backbone.
 ## Create OSPF Instance on MT12
 
 an instance defines router-id and global settings.
+
 Input:
 
 ```
@@ -39,6 +40,7 @@ Input:
 ## Create OSPF Area on MT12
 
 an area groups routers to exchange LSAs.
+
 Input:
 
 ```
@@ -50,6 +52,7 @@ Input:
 ## Enable OSPF on VLAN Interface MT12
 
 OSPF only forms neighbors on enabled interfaces.
+
 Input:
 
 ```
@@ -61,6 +64,7 @@ Input:
 ## Advertise Network on MT12
 
 instruct OSPF to announce a subnet.
+
 Input:
 
 ```
@@ -73,6 +77,7 @@ Input:
 ## Create OSPF instance on MT11
 
 router-id must be unique.
+
 Input:
 
 ```
@@ -84,6 +89,7 @@ Input:
 ## Create OSPF Area on MT11
 
 area must match to become neighbors.
+
 Input:
 
 ```
@@ -95,6 +101,7 @@ Input:
 ## Enable OSPF on VLAN Interface MT11
 
 OSPF will send Hello packets on this link.
+
 Input:
 
 ```
@@ -106,6 +113,7 @@ Input:
 ## Advertise Network on MT11
 
 both sides advertise the shared LAN.
+
 Input:
 
 ```
@@ -117,6 +125,7 @@ Input:
 ## Verify OSPF Neighbors
 
 Full state means LSDB synchronized.
+
 Input:
 
 ```

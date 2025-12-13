@@ -54,3 +54,5 @@ mysqldump -u root powerdns > powerdns.sql
 ```
 
 then scp/rsync `powerdns.sql` to slave node.
+
+---

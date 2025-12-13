@@ -42,7 +42,6 @@ systemctl restart systemd-resolved
 
 ---
 
-
 ## User Cannot Add Domain
 
 Edit file:
@@ -69,6 +68,8 @@ Comment out lines at 369:
 
 
 ```
+
+---
 
 ## unix:/run/powerdns-admin/socket failed (13: Permission denied) while connecting to upstream
 
@@ -106,6 +107,8 @@ INSERT INTO `role` VALUES (1,'Administrator','Administrator'),(2,'User','User'),
 
 Then recreate user from powerdns-admin webui.
 
+---
+
 ## Please complete your PowerDNS API configuration before continuing
 
 #### Verify the api-key is set
@@ -118,5 +121,5 @@ grep api-key /etc/powerdns/pdns.conf
 Or you can generate api-key:
 <ApiKeyGenerator />
 
-
+---
 

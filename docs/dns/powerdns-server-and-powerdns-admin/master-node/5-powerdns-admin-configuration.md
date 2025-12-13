@@ -15,10 +15,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Server settings
 BIND_ADDRESS = '0.0.0.0'
 PORT = 9191
-SECRET_KEY = '6914b035-22eb-4914-8962-817eabef5393'
+SECRET_KEY = '6914b035-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 
 # CAPTCHA settings
-CAPTCHA_ENABLE = True
 CAPTCHA_HEIGHT = 60
 CAPTCHA_LENGTH = 6
 CAPTCHA_WIDTH = 160

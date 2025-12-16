@@ -1,6 +1,6 @@
-# MySQL 8 Master–Slave Replication with ProxySQL
+# MySQL 8.0 Master–Slave Replication with ProxySQL
 
-This guide describes a `production‑ready deployment` of `Percona Server for MySQL 8` using `GTID‑based Master–Slave replication` with `ProxySQL` for `read/write splitting`. It covers installation, configuration, validation, scaling, and operational best practices.
+This guide describes a `production‑ready deployment` of `Percona Server for MySQL 8.0` using `GTID‑based Master–Slave replication` with `ProxySQL` for `read/write splitting`. It covers installation, configuration, validation, scaling, and operational best practices.
 
 ---
 
@@ -43,9 +43,12 @@ flowchart LR
 | Slave 2  | 192.168.1.212 | 
 | ProxySQL | 192.168.1.50  |
 
+:::info Tested with EL9 | Rocky Linux
+:::
+
 ---
 
-## Install Percona Server 8
+## Install Percona Server 8.0
 
 #### Percona provides its own signed YUM repository.
 
@@ -662,7 +665,80 @@ SHOW REPLICA STATUS\G
 
 ---
 
+## MySQL Replication Consistency Check and Manual Sync
+
+### Check Data Consistency 
+
+#### Install percona-toolkit
+
+Input:
+
+```
+yum install -y percona-toolkit
+```
+
+#### `pt-table-checksum` calculates checksums on the `master` and compares them via replication.
+
+Input:
+
+```
+pt-table-checksum \
+  --host=192.168.1.210 \
+  --user=ReplicationUser \
+  --password='Str0ngPasswd!' \
+  --replicate=percona.checksums \
+  --no-check-binlog-format \
+  --nocheck-replication-filters \
+  --databases testdb
+```
+
+Output:
+
+```
+            TS ERRORS  DIFFS     ROWS  DIFF_ROWS  CHUNKS SKIPPED    TIME TABLE
+12-16T02:17:33      0      0        2          0       1       0   0.375 testdb.test_table
+
+```
+
+This output shows replication data is consistent between master and all replicas.
+No sync required, because there are no differences, do not run pt-table-sync.
+
+
+### When DIFF Exists, Manual Sync Is Required 
+
+#### Preview Changes (Dry Run)
+
+Input:
+
+```
+pt-table-sync \
+  --replicate=percona.checksums \
+  --sync-to-master h=192.168.1.211,u=ReplicationUser,p='Str0ngPasswd!',P=3306 \
+  --databases testdb \
+  --print
+```
+
+Output will shows the exact SQL that would be applied to the replica.
+
+:::info 192.168.1.211 is slave ip
+:::
+
+#### For applies the synchronization
+
+Input: 
+
+```
+pt-table-sync \
+  --replicate=percona.checksums \
+  --sync-to-master h=192.168.1.211,u=ReplicationUser,p='Str0ngPasswd!',P=3306 \
+  --databases testdb \
+  --execute
+```
+
+---
+
 Resources:
-* [Percona Documentaion](https://docs.percona.com/)
+* [Percona for MySQL](https://docs.percona.com/percona-for-mysql/)
+* [Percona Toolkit](https://docs.percona.com/percona-toolkit/installation.html)
 
 ---

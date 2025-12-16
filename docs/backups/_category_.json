@@ -1,0 +1,9 @@
+{
+  "label": "Backups",
+  "position": 9,
+  "link": {
+    "type": "generated-index",
+    "description": "Backups is important for data protection and recovery in case of data loss, corruption, or disasters."
+  }
+}
+

@@ -1,0 +1,494 @@
+# Bareos S3 Client
+
+Bareos does not talk to S3 directly; it uses the **Storage Daemon + external program (s3cmd wrapper)** so S3 behaves like a virtual tape/file device.
+
+## Install Required Packages
+
+#### Install Bareos S3 support and s3cmd
+
+Input:
+
+```
+apt update
+```
+
+Input:
+
+```
+apt install -y bareos-storage-dplcompat s3cmd
+```
+
+This installs the Bareos dynamic program loader and the S3 client.
+
+---
+
+## Prepare Bareos Directories and Ownership
+
+#### Ensure script directory exists
+
+Input:
+
+```
+mkdir -p /usr/lib/bareos/scripts
+```
+
+#### Ensure Bareos home exists
+
+Input:
+
+```
+mkdir -p /var/lib/bareos
+```
+
+#### Set ownership
+
+Input:
+
+```
+chown -R bareos:bareos /var/lib/bareos /usr/lib/bareos/scripts
+```
+
+Bareos runs as the `bareos` user and must access credentials and scripts.
+
+---
+
+## Configure S3 Credentials 
+
+#### Create the S3 configuration file
+
+Input:
+
+```
+nano /var/lib/bareos/.s3cfg
+```
+
+Content:
+
+```
+[default]
+access_key = changeme
+secret_key = changeme
+host_base = changeme
+host_bucket = bareos
+cloudfront_host = https://changeme
+website_endpoint = https://changeme/%(bucket)s
+access_token = 
+add_encoding_exts = 
+add_headers = 
+bucket_location = US
+ca_certs_file = 
+cache_file = 
+check_ssl_certificate = True
+check_ssl_hostname = True
+connection_max_age = 5
+connection_pooling = True
+content_disposition = 
+content_type = 
+default_mime_type = binary/octet-stream
+delay_updates = False
+delete_after = False
+delete_after_fetch = False
+delete_removed = False
+dry_run = False
+enable_multipart = True
+encoding = UTF-8
+encrypt = False
+expiry_date = 
+expiry_days = 
+expiry_prefix = 
+follow_symlinks = False
+force = False
+get_continue = False
+gpg_command = /usr/bin/gpg
+gpg_decrypt = %(gpg_command)s -d --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
+gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
+gpg_passphrase = 
+guess_mime_type = True
+human_readable_sizes = False
+invalidate_default_index_on_cf = False
+invalidate_default_index_root_on_cf = True
+invalidate_on_cf = False
+keep_dirs = False
+kms_key = 
+limit = -1
+limitrate = 0
+list_allow_unordered = False
+list_md5 = False
+log_target_prefix = 
+long_listing = False
+max_delete = -1
+max_retries = 5
+mime_type = 
+multipart_chunk_size_mb = 5120
+multipart_copy_chunk_size_mb = 10240
+multipart_max_chunks = 100000
+preserve_attrs = True
+progress_meter = True
+proxy_host = 
+proxy_port = 0
+public_url_use_https = False
+put_continue = False
+recursive = False
+recv_chunk = 65536
+reduced_redundancy = False
+requester_pays = False
+restore_days = 1
+restore_priority = Standard
+send_chunk = 65536
+server_side_encryption = False
+signature_v2 = False
+signurl_use_https = False
+simpledb_host = sdb.amazonaws.com
+skip_destination_validation = False
+skip_existing = False
+socket_timeout = 300
+ssl_client_cert_file = 
+ssl_client_key_file = 
+stats = False
+stop_on_error = False
+storage_class = 
+throttle_max = 100
+upload_id = 
+urlencoding_mode = normal
+use_http_expect = False
+use_https = True
+use_mime_magic = True
+verbosity = WARNING
+website_error = 
+website_index = index.html
+```
+
+:::info replace `changeme` with your credentials
+:::
+
+#### Secure the file
+
+Input:
+
+```
+chown bareos:bareos /var/lib/bareos/.s3cfg
+```
+
+Input:
+
+```
+chmod 600 /var/lib/bareos/.s3cfg
+```
+
+Bareos will refuse to use insecure credential files.
+
+---
+
+## Create S3 Wrapper Script
+
+#### Create wrapper script
+
+Input:
+
+```
+nano /usr/lib/bareos/scripts/s3-wrapper.sh
+```
+
+Content:
+
+```
+#!/usr/bin/env bash
+#   BAREOSÂ® - Backup Archiving REcovery Open Sourced
+#
+#   Copyright (C) 2024-2024 Bareos GmbH & Co. KG
+#
+#   This program is Free Software; you can redistribute it and/or
+#   modify it under the terms of version three of the GNU Affero General Public
+#   License as published by the Free Software Foundation and included
+#   in the file LICENSE.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   Affero General Public License for more details.
+#
+#   You should have received a copy of the GNU Affero General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+#   02110-1301, USA.
+
+set -Eeuo pipefail
+
+if [ "$1" = options ]; then
+  printf "%s\n" bucket s3cfg s3cmd_prog base_url storage_class
+  exit 0
+fi
+
+# option defaults
+: "${s3cfg:=}"
+: "${s3cmd_prog:=$(command -v s3cmd)}"
+: "${bucket:=backup}"
+: "${base_url:=s3://${bucket}}"
+: "${storage_class:=}"
+
+s3cmd_common_args=(--no-progress)
+s3cmd_put_args=()
+
+if [ -n "${s3cfg}" ]; then
+  if [ ! -r "${s3cfg}" ]; then
+    echo "provided configuration file '${s3cfg}' is not readable" >&2
+    exit 1
+  else
+    s3cmd_common_args+=(--config "${s3cfg}")
+  fi
+fi
+
+if [ -z "${s3cmd_prog}" ]; then
+  echo "Cannot find s3cmd command" >&2
+  exit 1
+elif [ ! -x "${s3cmd_prog}" ]; then
+  echo "Cannot execute '${s3cmd_prog}'" >&2
+  exit 1
+fi
+
+if [ -n "${storage_class}" ]; then
+  s3cmd_put_args+=("--storage-class=${storage_class}")
+fi
+
+run_s3cmd() {
+  "$s3cmd_prog" "${s3cmd_common_args[@]}" "$@"
+}
+exec_s3cmd() {
+  exec "$s3cmd_prog" "${s3cmd_common_args[@]}" "$@"
+}
+
+if [ $# -eq 2 ]; then
+  volume_url="${base_url}/$2/"
+elif [ $# -eq 3 ]; then
+  part_url="${base_url}/$2/$3"
+elif [ $# -gt 3 ]; then
+  echo "$0 takes at most 3 arguments" >&2
+  exit 1
+fi
+
+case "$1" in
+  testconnection)
+    exec_s3cmd info "${base_url}"
+    ;;
+  list)
+    run_s3cmd ls "${volume_url}" \
+    | while read -r date time size url; do
+      [[ "${size}" !=  +([0-9]) ]] && continue
+      echo "${url:${#volume_url}}" "$size"
+    done
+    ;;
+  stat)
+    # shellcheck disable=SC2030,SC2034
+    run_s3cmd ls "$part_url" \
+      | (read -r date time size url; echo "$size")
+    ;;
+  upload)
+    exec_s3cmd "${s3cmd_put_args[@]}" put - "$part_url"
+    ;;
+  download)
+    exec_s3cmd get "$part_url" -
+    ;;
+  remove)
+    exec_s3cmd del "$part_url"
+    ;;
+  *)
+    exit 2
+    ;;
+esac
+```
+
+#### Make executable
+
+Input:
+
+```
+chmod 755 /usr/lib/bareos/scripts/s3-wrapper.sh
+```
+
+Input:
+
+```
+chown bareos:bareos /usr/lib/bareos/scripts/s3-wrapper.sh
+```
+
+This script converts Bareos read/write/delete operations into S3 API calls.
+
+---
+
+## Define S3 Device 
+
+#### Create device configuration
+
+Input:
+
+```
+nano /etc/bareos/bareos-sd.d/device/s3_device.conf
+```
+
+Content:
+
+```
+Device {
+    Name = s3
+    Media Type = s3
+    Archive Device = S3 Object Storage
+    Device Options = "iothreads=4"
+                     ",ioslots=2"
+                     ",program=s3cmd-wrapper.sh"
+                     ",s3cfg=/var/lib/bareos/.s3cfg"
+                     ",bucket=bareos"
+    Device Type = dplcompat
+    LabelMedia = yes
+    Random Access = yes
+    Automatic Mount = yes
+    Removable Media = no
+    Always Open = no
+    Maximum Concurrent Jobs = 1
+  }
+```
+
+This tells Bareos-SD to pipe volume data to the wrapper.
+
+---
+
+## Define Storage Resource 
+
+#### Create storage definition
+
+Input:
+
+```
+nano /etc/bareos/bareos-dir.d/storage/s3_storage.conf
+```
+
+Content:
+
+```
+Storage {
+    Name = s3
+    Address = bareos-domain 
+    Password = "director_password" 
+    Device = s3
+    Media Type = s3
+    TLS Enable = yes
+    TLS Require = yes
+    TLS Certificate = "/etc/bareos/tls/director.crt"
+    TLS CA Certificate File = "/etc/bareos/tls/ca.crt"
+    TLS Key = "/etc/bareos/tls/director.key"
+  }
+```
+:::info show director password
+```
+grep pass /etc/bareos/bareos-dir.d/director/bareos-dir.conf 
+```
+:::
+---
+
+## Define Pool for S3 Backups
+
+#### Create pool configuration
+
+Input:
+
+```
+nano /etc/bareos/bareos-dir.d/pool/longterm_storage.conf
+```
+
+Content:
+
+```
+Pool {
+    Name = longterm-s3-storage
+    Pool Type = Backup
+    Storage = "s3"          # S3 storage has to be defined here, see bug https://bugs.bareos.org/view.php?id=824
+    Recycle = yes                  # Bareos can automatically recycle Volumes
+    AutoPrune = yes                # Prune expired volumes
+    Volume Retention = 30 days     # How long should the backups be kept?
+    Maximum Volumes = 50           # Limit number of Volumes in Pool
+    Maximum Volume Jobs = 1        # Number of jobs per volume
+    Label Format = "s3-longterm-"  # Volumes will be labeled with this prefix
+  }
+  
+```
+
+The pool determines retention and volume lifecycle in S3.
+
+---
+
+## Restart Bareos Services
+
+#### Restart Storage Daemon
+
+Input:
+
+```
+systemctl restart bareos-sd
+```
+
+#### Restart Director
+
+Input:
+
+```
+systemctl restart bareos-dir
+```
+
+#### Verify status
+
+Input:
+
+```
+systemctl status bareos-sd bareos-dir
+```
+
+Both services must be active for S3 to work.
+
+---
+
+## Test S3 Connectivity
+
+#### Test upload as bareos user
+
+Input:
+
+```
+echo "test" | s3cmd --config=/var/lib/bareos/.s3cfg put - s3://bareos/test.txt
+```
+
+#### Test download
+
+Input:
+
+```
+s3cmd get s3://bareos/test.txt --config=/var/lib/bareos/.s3cfg 
+```
+
+If these succeed, Bareos will work.
+
+---
+
+## Common Debug Commands
+
+#### List volumes known to Bareos
+
+Input:
+
+```
+bconsole
+```
+
+Input:
+
+```
+list volumes
+```
+
+#### Watch Storage Daemon logs
+
+Input:
+
+```
+journalctl -u bareos-sd -f
+```
+
+---

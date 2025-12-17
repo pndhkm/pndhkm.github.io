@@ -1,4 +1,4 @@
-# BareOS Server Setup
+# Bareos Server
 
 :::info Tested With Debian 12
 :::
@@ -164,6 +164,18 @@ systemctl enable --now postgresql
 
 This ensures PostgreSQL is running for the BareOS catalog.
 
+Define PostgreSQL for cataolog on `/etc/bareos/bareos-dir.d/catalog/MyCatalog.conf`
+
+```
+Catalog {
+  Name = MyCatalog
+  dbname = "bareos"
+  dbuser = "bareos"
+  dbpassword = "STRONGPASSWORD"
+}
+
+```
+
 ### BareOS Package Installation
 
 Install BareOS Director, Storage Daemon, and File Daemon.
@@ -175,6 +187,28 @@ apt install -y bareos bareos-database-postgresql bareos-storage bareos-filedaemo
 ```
 
 This installs all core BareOS services.
+
+Forces password auth for all socket users on `pg_hba.conf`
+
+Replace `peer` with  `scram-sha-256`:
+
+Before:
+
+```
+local   all   all   peer
+```
+
+After:
+
+```
+local   all   all   scram-sha-256
+```
+
+Reload postgresql
+
+```
+systemctl reload postgresql
+```
 
 ### BareOS Database Creation
 
@@ -211,6 +245,13 @@ su - postgres /usr/lib/bareos/scripts/grant_bareos_privileges
 ```
 
 This allows BareOS daemons to access the catalog.
+
+Change password for bareos user
+
+Input:
+```
+su - postgres -c "psql -c \"ALTER USER bareos WITH PASSWORD 'STRONGPASSWORD';\""
+```
 
 ### Configuration for File Daemon
 

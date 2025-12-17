@@ -10,7 +10,7 @@ The BIRD Internet Routing Daemon project aims to develop a fully functional dyna
 
 Source: https://bird.network.cz/
 
-## Pre Install
+## Pre Install BGP on BIRD
 
 :::info Tested with Debian
 :::

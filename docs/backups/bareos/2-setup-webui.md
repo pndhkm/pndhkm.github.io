@@ -2,6 +2,8 @@
 
 Bareos WebUI is a PHP web application that connects to **bareos-dir** using a dedicated **Console** user and ACL **Profile**, allowing safe monitoring and control of backup jobs via browser.
 
+---
+
 ## Components Overview
 
 | Component    | Role                  |
@@ -236,6 +238,7 @@ http://example.com/bareos-webui
 ![Bareos Webui](https://calm-bonus-da0a.pndhkmgithub.workers.dev/1ORbKhA-oak7mZN84ttdpSnRScPGBs0if)
 
 ---
+
 ## Common Troubleshooting Commands
 
 Check Apache errors:

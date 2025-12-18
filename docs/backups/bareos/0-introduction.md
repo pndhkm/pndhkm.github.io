@@ -5,6 +5,8 @@ Bareos is a set of computer programs that permits the system administrator to ma
 
 In technical terms, it is a network Client/Server based backup program. Bareos is relatively easy to use and efficient, while offering many advanced storage management features that make it easy to find and recover lost or damaged files. Due to its modular design, Bareos is scalable from small single computer systems to systems consisting of hundreds of computers located over a large network.
 
+---
+
 ## BareOS Architecture
 
 This diagram shows the Bareos (Backup Archiving Recovery Open Source) architecture and how its main components interact during backup and restore operations.

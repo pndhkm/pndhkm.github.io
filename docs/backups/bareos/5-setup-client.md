@@ -51,6 +51,22 @@ Client {
 
 This registers the client with the Director.
 
+### Fix Ownership Recursively
+
+Input:
+
+```
+chown -R bareos:bareos /etc/bareos
+```
+
+### Restart Bareos DIR
+
+Input:
+
+```
+systemctl restart bareos-dir
+```
+
 ---
 
 ## Client Side Installation

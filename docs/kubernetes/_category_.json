@@ -1,0 +1,9 @@
+{
+  "label": "Kubernetes",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "Kubernetes is an open-source container orchestration platform for automating deployment, scaling, and management of containerized applications."
+  }
+}
+

@@ -35,6 +35,8 @@ This post focuses on **kind** because it is:
 * 100% containerd
 * Zero VM setup
 
+Kind uses containerd inside Kubernetes nodes, but requires Docker on the host to run the nodes as containers.
+
 ## Architecture (kind + containerd)
 
 ```mermaid
@@ -185,7 +187,7 @@ Output:
 
 ```
 NAME                STATUS     ROLES           AGE   VERSION
-lab-control-plane   NotReady   control-plane   9s    v1.35.0
+lab-control-plane   Ready   control-plane   1m    v1.35.0
 ```
 
 This confirms the node is running.

@@ -43,7 +43,7 @@ This directory will be used as the mount target.
 Input:
 
 ```
-mount /dev/vdb /home/example/jetbackup5
+mount /dev/vdb1 /home/example/jetbackup5
 ```
 
 The disk is now mounted and ready to use.
@@ -53,13 +53,13 @@ The disk is now mounted and ready to use.
 Input:
 
 ```
-blkid /dev/vdb
+blkid /dev/vdb1
 ```
 
 Output:
 
 ```
-/dev/vdb: UUID="3f1c0b8f-7b1a-41cd-8e1c-635dbe22c291" TYPE="ext4"
+/dev/vdb1: UUID="3f1c0b8f-7b1a-41cd-8e1c-635dbe22c291" TYPE="ext4"
 ```
 
 This shows the UUID that will be used for persistent mounting.

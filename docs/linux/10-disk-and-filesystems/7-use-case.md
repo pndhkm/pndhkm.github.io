@@ -6,10 +6,24 @@ Mounting /dev/vdb to /home/example/jetbackup5
 
 ### creating a filesystem on the disk
 
-Input:
-
+List available disks:
 ```
-mkfs.ext4 /dev/vdb
+lsblk -f
+```
+
+Example disk: `/dev/vdb`
+
+Create a GPT partition table, create a partition, and format it as ext4:
+
+:::danger
+This process will destroy all existing data on the disk.
+:::
+
+Input:
+```
+parted /dev/vdb --script mklabel gpt
+parted /dev/vdb --script mkpart primary ext4 0% 100%
+mkfs.ext4 /dev/vdb1
 ```
 
 This creates an ext4 filesystem on the empty disk so it can be used for storage.

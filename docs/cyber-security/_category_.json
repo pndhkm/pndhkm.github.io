@@ -1,0 +1,9 @@
+{
+  "label": "Cyber Security",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "Familiarity with basic cybersecurity concepts such as encryption, access control, and common attack vectors provides a foundation for more advanced security work"
+  }
+}
+

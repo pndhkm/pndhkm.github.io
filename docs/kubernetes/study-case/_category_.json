@@ -1,0 +1,8 @@
+{
+  "label": "Production Study Case",
+  "position": 20,
+  "link": {
+    "type": "generated-index",
+    "description": "A real-world, production-like Kubernetes environment built from scratch on bare-metal VMs — following the same patterns used by modern Platform Engineering teams."
+  }
+}

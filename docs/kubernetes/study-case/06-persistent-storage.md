@@ -157,23 +157,42 @@ NFS allows any pod on any node to mount the same volume — required for `ReadWr
 
 ### Set Up NFS Server on k8s-control
 
+:::caution Export the parent directory, not subdirectories
+The NFS provisioner mounts the path you set in `--set nfs.path=/nfs` and **creates its own subdirectories** inside it dynamically. If you export subdirectories like `/nfs/mariadb` instead of the parent `/nfs`, the provisioner will mount a read-only filesystem and fail with:
+```
+failed to provision volume: mkdir /persistentvolumes/...: read-only file system
+```
+Always export the **parent** `/nfs` and let the provisioner manage the contents.
+:::
+
 ```bash
 # Install NFS server (on control-plane or a dedicated NFS VM)
 apt install -y nfs-kernel-server
 
-# Create export directories
-mkdir -p /nfs/mariadb
-mkdir -p /nfs/redis
-chmod 777 /nfs/mariadb /nfs/redis
+# Create the parent export directory
+mkdir -p /nfs
+chmod 777 /nfs
 
-# Configure exports
+# Export the parent directory — NOT subdirectories
 cat >> /etc/exports << 'EOF'
-/nfs/mariadb  192.168.90.0/24(rw,sync,no_subtree_check,no_root_squash)
-/nfs/redis    192.168.90.0/24(rw,sync,no_subtree_check,no_root_squash)
+/nfs  192.168.90.0/24(rw,sync,no_subtree_check,no_root_squash)
 EOF
 
 exportfs -ra
 systemctl enable --now nfs-kernel-server
+```
+
+Verify the export is active:
+
+```bash
+showmount -e localhost
+```
+
+Expected output:
+
+```
+Export list for localhost:
+/nfs  192.168.90.0/24
 ```
 
 ### Install NFS Client on Worker Nodes
@@ -186,6 +205,26 @@ apt install -y nfs-common
 ### Install NFS Subdir External Provisioner
 
 This creates a StorageClass that auto-provisions PVs from NFS.
+
+First, install Helm if it is not already available on the control-plane:
+
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Verify:
+
+```bash
+helm version
+```
+
+Output:
+
+```
+version.BuildInfo{Version:"v3.x.x", ...}
+```
+
+Then add the NFS provisioner chart and install it:
 
 ```bash
 helm repo add nfs-subdir-external-provisioner \

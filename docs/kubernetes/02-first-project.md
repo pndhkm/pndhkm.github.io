@@ -84,7 +84,7 @@ This confirms Docker is available.
 Input:
 
 ```
-curl -LO https://dl.k8s.io/release/$(curl -s https://cdn.dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl
 ```
 
 No output is expected.

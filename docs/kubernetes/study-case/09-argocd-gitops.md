@@ -239,7 +239,7 @@ resources:
 - configmap.yaml
 
 images:
-- name: yourdockerhub/sample-app
+- name: panduhakam/sample-app
   newTag: "v1"                    # ArgoCD + CI will update this tag
 ```
 
@@ -304,14 +304,14 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t yourdockerhub/sample-app:${{ github.sha }} .
+        docker build -t panduhakam/sample-app:${{ github.sha }} .
 
     - name: Push to Docker Hub
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        echo $DOCKER_PASSWORD | docker login -u yourdockerhub --password-stdin
-        docker push yourdockerhub/sample-app:${{ github.sha }}
+        echo $DOCKER_PASSWORD | docker login -u panduhakam --password-stdin
+        docker push panduhakam/sample-app:${{ github.sha }}
 
     - name: Update Kubernetes manifests
       run: |

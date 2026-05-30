@@ -59,20 +59,32 @@ data:
   APP_NAME: "SampleApp"
   APP_ENV: "production"
   APP_DEBUG: "false"
-  APP_URL: "https://app.local"
-  LOG_CHANNEL: "stderr"          # Log to stdout for kubectl logs
+  APP_URL: "http://app.local"        # https only after TLS is set up (Phase 10)
+  LOG_CHANNEL: "stderr"              # Log to stdout for kubectl logs
   LOG_LEVEL: "warning"
   DB_CONNECTION: "mysql"
-  DB_HOST: "mariadb-svc"         # Service name = DNS hostname
+  DB_HOST: "mariadb-svc"             # Service name = DNS hostname
   DB_PORT: "3306"
   DB_DATABASE: "laravel"
-  CACHE_DRIVER: "redis"
+  
+  # Custom Connection (Used by migrations in this sample-app)
+  SHARED_DB_HOST: "mariadb-svc"
+  SHARED_DB_PORT: "3306"
+  SHARED_DB_DATABASE: "laravel"
+
+  # Waterline Dashboard Access
+  WATERLINE_ALLOW_UNAUTHENTICATED: "true"  # Required to bypass 403 Forbidden in production environment
+
+  CACHE_STORE: "redis"               # Laravel 11+: CACHE_STORE (not CACHE_DRIVER)
   SESSION_DRIVER: "redis"
   QUEUE_CONNECTION: "redis"
-  REDIS_HOST: "redis-svc"        # Service name = DNS hostname
+  REDIS_HOST: "redis-svc"            # Service name = DNS hostname
   REDIS_PORT: "6379"
-  BROADCAST_DRIVER: "log"
 ```
+
+:::info Waterline Dashboard Authorization
+By default, the Waterline dashboard is protected by the `viewWaterline` gate and only allows access in the `local` environment (`APP_ENV=local`). Since this study case runs in the `production` environment (`APP_ENV=production`), accessing `app.local/waterline/dashboard` will return a **403 Forbidden** error unless `WATERLINE_ALLOW_UNAUTHENTICATED` is explicitly set to `"true"` in the ConfigMap.
+:::
 
 Apply:
 
@@ -88,34 +100,36 @@ kubectl apply -f laravel-configmap.yaml
 Never commit Secrets to Git. Use a Secret manager or Sealed Secrets in real production.
 :::
 
-First generate an APP_KEY:
+Generate an APP_KEY using `openssl` — no PHP or Composer required:
 
 ```bash
-php artisan key:generate --show
-# Output: base64:abc123...
+echo "base64:$(openssl rand -base64 32)"
+# Output: base64:K7Qx2mP9nYvL3tRjWdF8hCeA1oGbZsXu5NkMiHpV6wE=
 ```
 
-Create: `laravel-secret.yaml`
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: laravel-secret
-  namespace: production
-type: Opaque
-stringData:
-  APP_KEY: "base64:your-generated-key-here"
-  DB_USERNAME: "laravel"
-  DB_PASSWORD: "strongpassword123"
-  REDIS_PASSWORD: ""
-```
-
-Apply:
+Create the secret directly with `kubectl`, injecting the generated key inline:
 
 ```bash
-kubectl apply -f laravel-secret.yaml
+kubectl create secret generic laravel-secret \
+  --from-literal=APP_KEY="base64:$(openssl rand -base64 32)" \
+  --from-literal=DB_USERNAME="laravel" \
+  --from-literal=DB_PASSWORD="strongpassword123" \
+  --from-literal=SHARED_DB_USERNAME="laravel" \
+  --from-literal=SHARED_DB_PASSWORD="strongpassword123" \
+  --from-literal=REDIS_PASSWORD="" \
+  -n production
 ```
+
+Verify the secret was created:
+
+```bash
+kubectl get secret laravel-secret -n production -o jsonpath='{.data.APP_KEY}' | base64 -d
+# Must output: base64:xxxxxxxxxx... (not the placeholder)
+```
+
+:::caution Common mistake
+Leaving `APP_KEY` as the placeholder value `base64:your-generated-key-here` causes a **500 Server Error** on every request. Always verify the secret value after creation.
+:::
 
 ---
 
@@ -126,12 +140,21 @@ We use a StatefulSet (not Deployment) for MariaDB because:
 - Ordered deployment and termination
 - Stable PVC per replica
 
-:::warning Bare-Metal Storage Prerequisite
-The StatefulSet creates a PVC (`mariadb-data-mariadb-0`) automatically. On bare-metal **without a StorageClass**, this PVC will stay `Pending` and the pod will never schedule.
+:::info Storage prerequisite
+This phase requires the `nfs-storage` StorageClass from [Phase 06 — Persistent Storage](/docs/kubernetes/study-case/06-persistent-storage). Verify it is ready before continuing:
 
-You have two options:
-- **Quick lab fix:** Create a `hostPath` PV manually (see [Troubleshooting](#troubleshooting) below).
-- **Production fix:** Complete Phase 07 (NFS StorageClass) first, then return here.
+```bash
+kubectl get storageclass
+```
+
+Expected output:
+
+```
+NAME                    PROVISIONER                                VOLUMEBINDINGMODE
+nfs-storage (default)   cluster.local/nfs-provisioner-...         Immediate
+```
+
+If `nfs-storage` is missing, complete Phase 06 first.
 :::
 
 Create: `mariadb-statefulset.yaml`
@@ -220,6 +243,7 @@ spec:
       name: mariadb-data
     spec:
       accessModes: ["ReadWriteOnce"]
+      storageClassName: nfs-storage        # NFS provisioner from Phase 06
       resources:
         requests:
           storage: 5Gi
@@ -231,10 +255,38 @@ Apply:
 kubectl apply -f mariadb-statefulset.yaml
 ```
 
-Wait for MariaDB to be ready:
+:::caution Before waiting — verify the PVC is Bound first
+`kubectl wait` will silently time out and exit with an error if the NFS StorageClass is not working. A `Pending` PVC means the pod will **never** become Ready, no matter how long you wait.
+
+Always check the PVC status before waiting for the pod:
+:::
 
 ```bash
-kubectl wait pod/mariadb-0 --for=condition=ready --timeout=120s -n production
+# Step 1 — Confirm the PVC was provisioned by NFS (STATUS must be Bound)
+kubectl get pvc -n production
+```
+
+Expected output:
+
+```
+NAME                    STATUS   VOLUME        CAPACITY   STORAGECLASS
+mariadb-data-mariadb-0  Bound    pvc-xxx...    5Gi        nfs-storage
+```
+
+If `STATUS` is `Pending`, **stop here** — NFS is not ready. Go to [Troubleshooting](#troubleshooting) below.
+
+```bash
+# Step 2 — Only run this AFTER the PVC is Bound
+kubectl get pod mariadb-0 -n production -w
+```
+
+Expected output:
+
+```
+NAME        READY   STATUS              RESTARTS   AGE
+mariadb-0   0/1     ContainerCreating   0          5s
+mariadb-0   0/1     Running             0          15s
+mariadb-0   1/1     Running             0          30s    ← Ready
 ```
 
 ---
@@ -387,8 +439,8 @@ CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 Build and push:
 
 ```bash
-docker build --target production -t yourdockerhub/sample-app:v1 .
-docker push yourdockerhub/sample-app:v1
+docker build --target production -t panduhakam/sample-app:v1 .
+docker push panduhakam/sample-app:v1
 ```
 
 :::tip Build cache
@@ -430,15 +482,12 @@ spec:
     spec:
       initContainers:
       - name: laravel-init
-        image: yourdockerhub/sample-app:v1
-        command:
-        - sh
-        - -c
-        - |
-          php artisan migrate --force
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+        image: panduhakam/sample-app:v1
+        args:
+        - php
+        - artisan
+        - migrate
+        - --force
         envFrom:
         - configMapRef:
             name: laravel-config
@@ -447,7 +496,7 @@ spec:
 
       containers:
       - name: laravel
-        image: yourdockerhub/sample-app:v1
+        image: panduhakam/sample-app:v1
         ports:
         - containerPort: 8000
         envFrom:
@@ -478,7 +527,9 @@ spec:
 ```
 
 :::info Why initContainer?
-The initContainer runs migrations **once before** the main app starts. This prevents multiple replicas from running migrations simultaneously — a common source of race conditions in production.
+The initContainer runs `php artisan migrate --force` **once before** the main app starts. This prevents multiple replicas from running migrations simultaneously — a common race condition in production.
+
+Note: `config:cache`, `route:cache`, and `view:cache` are intentionally **not** run here. The initContainer runs in an isolated filesystem that is not shared with the main container. The main container's `entrypoint.sh` also runs `config:clear` on every startup, so any cache written in the initContainer would be discarded anyway.
 :::
 
 Apply:
@@ -495,11 +546,14 @@ kind: Service
 metadata:
   name: laravel-svc
   namespace: production
+  labels:
+    app: laravel         # Required for ServiceMonitor discovery!
 spec:
   selector:
     app: laravel
   ports:
-  - port: 80
+  - name: http           # Required for ServiceMonitor endpoint mapping!
+    port: 80
     targetPort: 8000     # artisan serve listens on 8000
 ```
 
@@ -571,15 +625,48 @@ redis-xxx                  1/1     Running   0          4m
 
 ### Test the Application
 
+`app.local` is not a real DNS name. Before `curl` works, add it to `/etc/hosts` on the machine you are testing from:
+
+```bash
+# Get the MetalLB external IP assigned to ingress
+kubectl get svc -n ingress-nginx
+# Look for ingress-nginx-controller EXTERNAL-IP, e.g. 192.168.90.200
+
+# Add to /etc/hosts
+echo "192.168.90.200  app.local" >> /etc/hosts
+```
+
+Then test:
+
 ```bash
 curl http://app.local
 ```
 
-### Test Database Connectivity
+Or skip the hosts entry entirely and pass the Host header directly:
 
 ```bash
-kubectl exec -it deployment/laravel -n production -- \
-  php artisan migrate:status
+curl -H "Host: app.local" http://192.168.90.200
+```
+
+### Test Database Connectivity
+
+The `exec` command targets a specific running pod — not the deployment. First confirm the pod is `1/1 Running`:
+
+```bash
+kubectl get pods -n production -l app=laravel
+```
+
+If the pod shows `Init:0/1`, the `laravel-init` initContainer is still running migrations. Wait for it:
+
+```bash
+# Watch initContainer logs
+kubectl logs <pod-name> -n production -c laravel-init -f
+```
+
+Once the pod is `1/1 Running`, exec using the exact pod name:
+
+```bash
+kubectl exec -it <pod-name> -n production -- php artisan migrate:status
 ```
 
 ### Test Redis Connectivity
@@ -620,21 +707,22 @@ graph LR
 
 | Symptom | Cause | Fix |
 | ------- | ----- | --- |
-| `mariadb-0` stuck in `Pending` | PVC unbound — no StorageClass | See fix below ↓ |
-| Laravel pod `0/2` not ready | initContainer still running | `kubectl describe pod <pod>` |
-| `php artisan migrate` fails | MariaDB not ready | Wait for `mariadb-0` to be `Running` |
-| 502 Bad Gateway | php-fpm not starting | `kubectl logs deployment/laravel -c php-fpm` |
+| `mariadb-0` stuck in `Pending` | NFS StorageClass not ready | [See fix below ↓](#mariadb-0-stuck-in-pending) |
+| Laravel pod `0/1` not ready | initContainer still running | `kubectl describe pod <pod> -n production` |
+| `php artisan migrate` fails | MariaDB not ready OR `SHARED_DB_HOST` misconfigured | Ensure `mariadb-0` is running. Check ConfigMap has `SHARED_DB_HOST: "mariadb-svc"` since migration uses custom connection |
+| 502 Bad Gateway | Laravel not starting | `kubectl logs deployment/laravel -n production` |
 | Redis connection refused | Redis not running | `kubectl get pod -n production \| grep redis` |
-| App shows 500 error | APP_KEY missing | Verify Secret has `APP_KEY` |
+| App shows 500 error | `APP_KEY` is the placeholder value | Run `kubectl get secret laravel-secret -n production -o jsonpath='{.data.APP_KEY}' \| base64 -d` and regenerate if it shows `your-generated-key-here` |
 
-### ⚠️ mariadb-0 Stuck in Pending — Unbound PVC
-
-This is the most common bare-metal gotcha. The StatefulSet auto-creates a PVC, but on bare-metal there is no StorageClass to provision a PV automatically.
+### mariadb-0 Stuck in Pending
 
 **Diagnose:**
 
 ```bash
+# Check PVC status — look for STATUS: Pending
 kubectl get pvc -n production
+
+# Read the exact scheduler error
 kubectl describe pod mariadb-0 -n production | grep -A5 Events
 ```
 
@@ -643,93 +731,50 @@ If you see:
 Warning  FailedScheduling  pod has unbound immediate PersistentVolumeClaims
 ```
 
-→ No PV exists for the PVC. Choose a fix:
+The PVC cannot find a matching PV. Follow the steps below.
 
 ---
 
-**Fix A — hostPath PV (lab, quick, node-pinned)**
+**Fix — Verify NFS StorageClass is working**
 
 ```bash
-# Create the data directory on worker1
-ssh root@192.168.90.27 "mkdir -p /data/mariadb"
+# 1. Check the StorageClass exists
+kubectl get storageclass
+
+# 2. Check the NFS provisioner pod is Running
+kubectl get pods -n kube-system | grep nfs
+
+# 3. Check the provisioner logs for errors
+kubectl logs -n kube-system deployment/nfs-provisioner-nfs-subdir-external-provisioner
 ```
+
+If the provisioner is not running, reinstall it (see [Phase 06 — Persistent Storage](/docs/kubernetes/study-case/06-persistent-storage)).
+
+If the provisioner is running but the PVC is still `Pending`, describe the PVC for the exact reason:
 
 ```bash
-# Create a matching PV manually
-kubectl apply -f - <<'EOF'
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mariadb-pv
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""            # empty = manual binding
-  hostPath:
-    path: /data/mariadb
-    type: DirectoryOrCreate
-EOF
+kubectl describe pvc mariadb-data-mariadb-0 -n production
 ```
 
-Then patch the PVC to bind directly to this PV:
+Once the StorageClass is healthy, delete and re-create the StatefulSet so a fresh PVC is provisioned:
 
 ```bash
-kubectl patch pvc mariadb-data-mariadb-0 -n production \
-  -p '{"spec":{"storageClassName":"","volumeName":"mariadb-pv"}}'
+kubectl delete statefulset mariadb -n production
+kubectl delete pvc mariadb-data-mariadb-0 -n production
+kubectl apply -f mariadb-statefulset.yaml
 ```
 
-Verify the PVC is now bound:
+Verify:
 
 ```bash
 kubectl get pvc -n production
 ```
 
-Expected output:
+Expected:
 
 ```
-NAME                    STATUS   VOLUME       CAPACITY   ACCESS MODES
-mariadb-data-mariadb-0  Bound    mariadb-pv   5Gi        RWO
+NAME                    STATUS   VOLUME        CAPACITY   STORAGECLASS
+mariadb-data-mariadb-0  Bound    pvc-xxx...    5Gi        nfs-storage
 ```
-
-Then watch the pod come up:
-
-```bash
-kubectl get pod mariadb-0 -n production -w
-```
-
-:::note
-`hostPath` ties the pod to `k8s-worker1`. If that node goes down, the pod cannot reschedule until the node recovers. Use NFS (Phase 07) to remove this constraint.
-:::
-
----
-
-**Fix B — NFS StorageClass (production, multi-node)**
-
-Complete Phase 07 first to install the NFS provisioner and StorageClass, then delete and re-create the StatefulSet:
-
-```bash
-# Delete the stuck StatefulSet and PVC
-kubectl delete statefulset mariadb -n production
-kubectl delete pvc mariadb-data-mariadb-0 -n production
-
-# Update volumeClaimTemplate to use the NFS StorageClass, then re-apply
-kubectl apply -f mariadb-statefulset.yaml
-```
-
----
-
-## Production Best Practices
-
-| Practice | Reason |
-| -------- | ------ |
-| Use initContainers for migrations | Prevents race conditions on scale-out |
-| Set `maxUnavailable: 0` | Zero-downtime deployments |
-| Log to `stderr`/`stdout` | Enables `kubectl logs` and log aggregation |
-| Separate nginx + php-fpm containers | Nginx handles static files efficiently |
-| Use StatefulSet for MariaDB | Stable identity, ordered ops |
-| Set resource requests AND limits | Prevents noisy-neighbor issues |
 
 ---

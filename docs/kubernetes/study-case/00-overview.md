@@ -91,8 +91,8 @@ graph LR
 | 03 | CNI Networking | Calico pod networking |
 | 04 | Load Balancer | MetalLB for bare-metal external IPs |
 | 05 | Ingress | NGINX Ingress Controller + host routing |
-| 06 | Laravel Stack | Full production app deployment |
-| 07 | Persistent Storage | PV, PVC, StorageClass for databases |
+| 06 | Persistent Storage | PV, PVC, StorageClass + NFS for databases |
+| 07 | Laravel Stack | Full production app deployment |
 | 08 | Monitoring | Prometheus + Grafana stack |
 | 09 | GitOps | ArgoCD for automated deployments |
 | 10 | Security | RBAC, NetworkPolicy, TLS hardening |

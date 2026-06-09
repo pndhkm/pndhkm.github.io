@@ -69,6 +69,7 @@ Input:
 export FLASK_APP=powerdnsadmin/__init__.py
 flask db init
 flask db migrate -m "Init DB"
+flask db upgrade
 ```
 ---
 

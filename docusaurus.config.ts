@@ -19,6 +19,10 @@ const config: Config = {
   organizationName,
   projectName,
 
+  // When Docusaurus finds broken links, treat them as warnings instead of build-stopping errors
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],

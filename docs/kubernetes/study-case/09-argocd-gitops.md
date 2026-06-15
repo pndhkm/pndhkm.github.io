@@ -17,13 +17,13 @@ graph LR
         Merge --> Build["Bui
 ld Docker Image"]
         Build --> Push["Push to Registry"]
-        Push --> UpdateManifest["Update image tag\nin Git manifests"]
+        Push --> UpdateManifest["Update image tag<br/>in Git manifests"]
     end
 
     subgraph GitOps["GitOps (ArgoCD)"]
-        UpdateManifest --> ArgoDet["ArgoCD detects\nGit change"]
-        ArgoDet --> Sync["ArgoCD syncs\nto cluster"]
-        Sync --> Deploy["Kubernetes applies\nnew Deployment"]
+        UpdateManifest --> ArgoDet["ArgoCD detects<br/>Git change"]
+        ArgoDet --> Sync["ArgoCD syncs<br/>to cluster"]
+        Sync --> Deploy["Kubernetes applies<br/>new Deployment"]
     end
 
     Cluster["Kubernetes Cluster"] -.->|drift detection| ArgoDet
@@ -81,8 +81,8 @@ ArgoCD watches the `k8s-manifests` repo. Your app code repo is separate.
 ```bash
 kubectl create namespace argocd
 
-kubectl apply -n argocd -f \
-  https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply --server-side -n argocd \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
 Wait for all ArgoCD pods to start:
@@ -352,11 +352,17 @@ sequenceDiagram
 ### Via ArgoCD UI
 
 1. Open `https://argocd.local`
-2. Click `laravel-production`
-3. Click `History and Rollback`
-4. Select the previous good revision
-5. Click `Rollback`
+   ![ArgoCD Dashboard](/img/kubernetes/argocd.local.jpg)
 
+2. Select the `laravel-production` application.
+   ![ArgoCD Laravel Application](/img/kubernetes/argocd-local-laravel-app.jpg)
+
+3. Navigate to the **History and Rollback** tab.
+   ![ArgoCD History and Rollback](/img/kubernetes/argocd-local-history-and-rollback.jpg)
+
+4. Select the last known good revision.
+
+5. Click the three-dot menu (**⋮**) next to the selected revision, then choose **Rollback**.
 ### Via CLI
 
 ```bash

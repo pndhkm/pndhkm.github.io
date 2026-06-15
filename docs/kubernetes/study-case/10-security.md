@@ -9,25 +9,25 @@
 ```mermaid
 graph TD
     subgraph Layer1["Layer 1: TLS / HTTPS"]
-        CertManager["cert-manager\n(auto TLS certs)"]
+        CertManager["cert-manager<br/>(auto TLS certs)"]
     end
 
     subgraph Layer2["Layer 2: Access Control"]
-        RBAC["RBAC\n(who can do what)"]
-        SA["ServiceAccounts\n(identity per pod)"]
+        RBAC["RBAC<br/>(who can do what)"]
+        SA["ServiceAccounts<br/>(identity per pod)"]
     end
 
     subgraph Layer3["Layer 3: Network Isolation"]
-        NetPol["NetworkPolicy\n(pod-level firewall)"]
+        NetPol["NetworkPolicy<br/>(pod-level firewall)"]
     end
 
     subgraph Layer4["Layer 4: Pod Security"]
-        PSS["Pod Security Standards\n(privilege restrictions)"]
-        SecCtx["SecurityContext\n(non-root, read-only FS)"]
+        PSS["Pod Security Standards<br/>(privilege restrictions)"]
+        SecCtx["SecurityContext<br/>(non-root, read-only FS)"]
     end
 
     subgraph Layer5["Layer 5: Secret Management"]
-        SealedSec["Sealed Secrets\n(encrypted in Git)"]
+        SealedSec["Sealed Secrets<br/>(encrypted in Git)"]
     end
 
     Internet --> Layer1 --> Layer2 --> Layer3 --> Layer4 --> Layer5
@@ -477,7 +477,7 @@ Now `laravel-sealed-secret.yaml` is safe to commit to Git. Only this cluster can
 
 | Check | Command | Expected |
 | ----- | ------- | -------- |
-| No pods running as root | `kubectl get pods -n production -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.securityContext.runAsUser}{"\n"}{end}'` | Non-zero UID |
+| No pods running as root | `kubectl get pods -n production -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.securityContext.runAsUser}{"<br/>"}{end}'` | Non-zero UID |
 | RBAC is limiting access | `kubectl auth can-i list secrets --as system:serviceaccount:production:laravel-sa -n production` | `no` |
 | NetworkPolicy applied | `kubectl get networkpolicy -n production` | Multiple policies |
 | TLS is enabled | `curl -k https://app.local -v` | TLS handshake succeeds |

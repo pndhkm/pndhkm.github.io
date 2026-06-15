@@ -15,7 +15,7 @@ graph TD
     end
 
     subgraph Good["With Ingress (Single IP)"]
-        IP["192.168.90.100:443\n(Ingress NGINX)"] -->|app.local| Laravel2["Laravel Service"]
+        IP["192.168.90.100:443<br/>(Ingress NGINX)"] -->|app.local| Laravel2["Laravel Service"]
         IP -->|grafana.local| Grafana2["Grafana Service"]
         IP -->|argocd.local| ArgoCD2["ArgoCD Service"]
     end
@@ -27,11 +27,11 @@ graph TD
 
 ```mermaid
 graph LR
-    Browser -->|HTTPS :443| MetalLB["MetalLB\n192.168.90.100"]
-    MetalLB --> NGINX["Ingress NGINX\nController Pod"]
-    NGINX -->|Host: app.local| LaravelSvc["Laravel Service\nClusterIP"]
-    NGINX -->|Host: grafana.local| GrafanaSvc["Grafana Service\nClusterIP"]
-    NGINX -->|Host: argocd.local| ArgoCDSvc["ArgoCD Service\nClusterIP"]
+    Browser -->|HTTPS :443| MetalLB["MetalLB<br/>192.168.90.100"]
+    MetalLB --> NGINX["Ingress NGINX<br/>Controller Pod"]
+    NGINX -->|Host: app.local| LaravelSvc["Laravel Service<br/>ClusterIP"]
+    NGINX -->|Host: grafana.local| GrafanaSvc["Grafana Service<br/>ClusterIP"]
+    NGINX -->|Host: argocd.local| ArgoCDSvc["ArgoCD Service<br/>ClusterIP"]
     LaravelSvc --> LaravelPod["Laravel Pods"]
     GrafanaSvc --> GrafanaPod["Grafana Pod"]
     ArgoCDSvc --> ArgoCDPod["ArgoCD Pod"]

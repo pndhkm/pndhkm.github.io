@@ -23,20 +23,20 @@ Calico can run in **overlay mode** (VXLAN) for compatibility or **direct routing
 ```mermaid
 graph TD
     subgraph Node1["k8s-control (192.168.90.26)"]
-        Pod1A["Pod A\n10.244.0.2"]
-        Pod1B["Pod B\n10.244.0.3"]
+        Pod1A["Pod A<br/>10.244.0.2"]
+        Pod1B["Pod B<br/>10.244.0.3"]
         calico1["calico-node"]
         vxlan1["VXLAN interface"]
     end
 
     subgraph Node2["k8s-worker1 (192.168.90.27)"]
-        Pod2A["Pod C\n10.244.1.2"]
+        Pod2A["Pod C<br/>10.244.1.2"]
         calico2["calico-node"]
         vxlan2["VXLAN interface"]
     end
 
     subgraph Node3["k8s-worker2 (192.168.90.28)"]
-        Pod3A["Pod D\n10.244.2.2"]
+        Pod3A["Pod D<br/>10.244.2.2"]
         calico3["calico-node"]
         vxlan3["VXLAN interface"]
     end

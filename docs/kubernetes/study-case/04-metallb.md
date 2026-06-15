@@ -9,13 +9,13 @@
 ```mermaid
 graph LR
     subgraph Cloud["Cloud (EKS/GKE)"]
-        SvcCloud["Service\ntype: LoadBalancer"] -->|auto provision| AWSELB["Cloud Load Balancer\n(external IP)"]
+        SvcCloud["Service<br/>type: LoadBalancer"] -->|auto provision| AWSELB["Cloud Load Balancer<br/>(external IP)"]
     end
 
     subgraph Bare["Bare-Metal (Your Cluster)"]
-        SvcBM["Service\ntype: LoadBalancer"] -->|without MetalLB| Pending["EXTERNAL-IP: pending\n(forever)"]
-        SvcBM -->|with MetalLB| MetalLB["MetalLB\nAssigns IP from pool"]
-        MetalLB --> ExternalIP["EXTERNAL-IP: 192.168.90.100\n(reachable from your network)"]
+        SvcBM["Service<br/>type: LoadBalancer"] -->|without MetalLB| Pending["EXTERNAL-IP: pending<br/>(forever)"]
+        SvcBM -->|with MetalLB| MetalLB["MetalLB<br/>Assigns IP from pool"]
+        MetalLB --> ExternalIP["EXTERNAL-IP: 192.168.90.100<br/>(reachable from your network)"]
     end
 ```
 

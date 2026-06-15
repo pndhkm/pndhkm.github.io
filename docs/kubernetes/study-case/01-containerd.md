@@ -23,10 +23,10 @@ containerd is what Docker itself uses internally. Using it directly removes unne
 
 ```mermaid
 graph TD
-    kubelet["kubelet"] -->|CRI gRPC| containerd["containerd\n(CRI plugin)"]
-    containerd -->|OCI spec| runc["runc\n(low-level runtime)"]
+    kubelet["kubelet"] -->|CRI gRPC| containerd["containerd<br/>(CRI plugin)"]
+    containerd -->|OCI spec| runc["runc<br/>(low-level runtime)"]
     runc --> container["Container Process"]
-    containerd -->|pull| registry["Container Registry\n(Docker Hub / Private)"]
+    containerd -->|pull| registry["Container Registry<br/>(Docker Hub / Private)"]
 ```
 
 - **kubelet** — the node agent, talks to containerd via CRI

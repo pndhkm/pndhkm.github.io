@@ -326,10 +326,10 @@ Kubernetes control plane is running at https://192.168.90.26:6443
 ```mermaid
 graph TD
     subgraph ControlPlane["k8s-control (192.168.90.26)"]
-        etcd["etcd\n(cluster state DB)"]
-        APIServer["kube-apiserver\n(REST API gateway)"]
-        Scheduler["kube-scheduler\n(pod placement)"]
-        Controller["kube-controller-manager\n(reconciliation loops)"]
+        etcd["etcd<br/>(cluster state DB)"]
+        APIServer["kube-apiserver<br/>(REST API gateway)"]
+        Scheduler["kube-scheduler<br/>(pod placement)"]
+        Controller["kube-controller-manager<br/>(reconciliation loops)"]
     end
 
     kubectl["kubectl"] -->|HTTPS :6443| APIServer
@@ -337,8 +337,8 @@ graph TD
     APIServer --> Scheduler
     APIServer --> Controller
 
-    Worker1["k8s-worker1\n192.168.90.27"] -->|kubelet heartbeat| APIServer
-    Worker2["k8s-worker2\n192.168.90.28"] -->|kubelet heartbeat| APIServer
+    Worker1["k8s-worker1<br/>192.168.90.27"] -->|kubelet heartbeat| APIServer
+    Worker2["k8s-worker2<br/>192.168.90.28"] -->|kubelet heartbeat| APIServer
 ```
 
 | Component | Role |

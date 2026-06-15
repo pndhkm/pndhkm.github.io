@@ -10,17 +10,17 @@
 graph TD
     subgraph NS["Namespace: production"]
         subgraph Laravel["Laravel Deployment (2+ replicas)"]
-            Nginx["nginx container\n(port 80)"] -->|fastcgi| PHPFPM["php-fpm container\n(port 9000)"]
+            Nginx["nginx container<br/>(port 80)"] -->|fastcgi| PHPFPM["php-fpm container<br/>(port 9000)"]
         end
 
         subgraph Data["Stateful Services"]
-            MariaDB["MariaDB StatefulSet\n(port 3306)"] --> PVC_DB[("PVC\nmariadb-data")]
-            Redis["Redis Deployment\n(port 6379)"] --> PVC_Redis[("PVC\nredis-data (optional)")]
+            MariaDB["MariaDB StatefulSet<br/>(port 3306)"] --> PVC_DB[("PVC<br/>mariadb-data")]
+            Redis["Redis Deployment<br/>(port 6379)"] --> PVC_Redis[("PVC<br/>redis-data (optional)")]
         end
 
         subgraph Config["Configuration"]
-            CM["ConfigMap\napp-config\n(.env non-sensitive)"]
-            Sec["Secret\napp-secret\n(DB_PASS, APP_KEY)"]
+            CM["ConfigMap<br/>app-config<br/>(.env non-sensitive)"]
+            Sec["Secret<br/>app-secret<br/>(DB_PASS, APP_KEY)"]
         end
 
         PHPFPM --> CM
@@ -29,7 +29,7 @@ graph TD
         PHPFPM --> Redis
     end
 
-    Ingress["Ingress NGINX\n(app.local)"] --> Nginx
+    Ingress["Ingress NGINX<br/>(app.local)"] --> Nginx
 ```
 
 ---
@@ -687,8 +687,8 @@ PONG
 
 ```mermaid
 graph LR
-    K8s["Kubernetes"] -->|readinessProbe\nevery 10s| App["PHP-FPM :9000"]
-    K8s -->|livenessProbe\nevery 20s| App
+    K8s["Kubernetes"] -->|readinessProbe<br/>every 10s| App["PHP-FPM :9000"]
+    K8s -->|livenessProbe<br/>every 20s| App
 
     App -->|PASS| Traffic["Receives Traffic"]
     App -->|FAIL readiness| NoTraffic["Removed from Service Endpoints"]

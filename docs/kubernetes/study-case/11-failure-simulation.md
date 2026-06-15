@@ -7,14 +7,14 @@
 ## The SRE Incident Response Framework
 
 ```mermaid
-graph LR
-    Alert["Alert Fires\nor User Reports"] --> Detect["1. Detect\nWhat's broken?"]
-    Detect --> Scope["2. Scope\nHow bad? What's affected?"]
-    Scope --> Triage["3. Triage\nImmediate mitigation?"]
-    Triage --> RootCause["4. Root Cause\nWhy did it break?"]
-    RootCause --> Fix["5. Fix\nApply the real fix"]
-    Fix --> Verify["6. Verify\nIs it actually fixed?"]
-    Verify --> Postmortem["7. Postmortem\nHow do we prevent recurrence?"]
+graph TB
+    Alert["Alert Fires<br/>or User Reports"] --> Detect["1. Detect<br/>What's broken?"]
+    Detect --> Scope["2. Scope<br/>How bad? What's affected?"]
+    Scope --> Triage["3. Triage<br/>Immediate mitigation?"]
+    Triage --> RootCause["4. Root Cause<br/>Why did it break?"]
+    RootCause --> Fix["5. Fix<br/>Apply the real fix"]
+    Fix --> Verify["6. Verify<br/>Is it actually fixed?"]
+    Verify --> Postmortem["7. Postmortem<br/>How do we prevent recurrence?"]
 ```
 
 Each scenario below follows this framework.
@@ -493,9 +493,9 @@ Events:
 ```mermaid
 graph TD
     Pod["mariadb-0 (Pending)"]
-    PVC["PVC: mariadb-data-0\nSTATUS: Pending ❌"]
-    PV["PersistentVolume\n(does not exist / not matching)"]
-    SC["StorageClass\n(missing / misconfigured)"]
+    PVC["PVC: mariadb-data-0<br/>STATUS: Pending ❌"]
+    PV["PersistentVolume<br/>(does not exist / not matching)"]
+    SC["StorageClass<br/>(missing / misconfigured)"]
 
     Pod -->|"requires"| PVC
     PVC -->|"waiting for"| PV
@@ -1058,12 +1058,12 @@ graph TD
     NamespaceReset{"Full clean slate?"}
 
     Start --> ZeroDowntime
-    ZeroDowntime -->|Yes| OptionA["Option A\nkubectl rollout restart"]
+    ZeroDowntime -->|Yes| OptionA["Option A<br/>kubectl rollout restart"]
     ZeroDowntime -->|No| DataSafe
-    DataSafe -->|Yes, keep data| OptionB["Option B / C\nDelete pods or workloads only"]
+    DataSafe -->|Yes, keep data| OptionB["Option B / C<br/>Delete pods or workloads only"]
     DataSafe -->|No, wipe everything| NamespaceReset
-    NamespaceReset -->|Keep namespace| OptionC["Option C\nDelete all resources"]
-    NamespaceReset -->|Full reset| OptionD["Option D\nDelete namespace"]
+    NamespaceReset -->|Keep namespace| OptionC["Option C<br/>Delete all resources"]
+    NamespaceReset -->|Full reset| OptionD["Option D<br/>Delete namespace"]
 ```
 
 ### Lessons Learned

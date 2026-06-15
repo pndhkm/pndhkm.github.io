@@ -9,19 +9,19 @@
 ```mermaid
 graph TD
     subgraph Sources["Metric Sources"]
-        KSM["kube-state-metrics\n(Deployment/Pod state)"]
-        NE["node-exporter\n(CPU, memory, disk)"]
-        Laravel["Laravel App\n(/metrics endpoint)"]
-        MariaDB["MariaDB Exporter\n(query metrics)"]
+        KSM["kube-state-metrics<br/>(Deployment/Pod state)"]
+        NE["node-exporter<br/>(CPU, memory, disk)"]
+        Laravel["Laravel App<br/>(/metrics endpoint)"]
+        MariaDB["MariaDB Exporter<br/>(query metrics)"]
     end
 
     subgraph Core["Monitoring Core"]
-        Prometheus["Prometheus\n(scrape + store)"]
-        AlertManager["AlertManager\n(route alerts)"]
+        Prometheus["Prometheus<br/>(scrape + store)"]
+        AlertManager["AlertManager<br/>(route alerts)"]
     end
 
     subgraph Viz["Visualization"]
-        Grafana["Grafana\n(dashboards)"]
+        Grafana["Grafana<br/>(dashboards)"]
     end
 
     subgraph Notif["Notifications"]

@@ -61,12 +61,12 @@ graph TD
 
 ```mermaid
 graph LR
-    Internet -->|HTTPS| MetalLB["MetalLB\nLoad Balancer"]
+    Internet -->|HTTPS| MetalLB["MetalLB<br/>Load Balancer"]
     MetalLB -->|L7 routing| Ingress["Ingress NGINX"]
-    Ingress -->|/| Laravel["Laravel App\n(PHP-FPM)"]
-    Laravel --> Redis["Redis\nCache & Session"]
-    Laravel --> MariaDB["MariaDB\nPrimary Database"]
-    MariaDB --> PV["Persistent Volume\n(hostPath / NFS)"]
+    Ingress -->|/| Laravel["Laravel App<br/>(PHP-FPM)"]
+    Laravel --> Redis["Redis<br/>Cache & Session"]
+    Laravel --> MariaDB["MariaDB<br/>Primary Database"]
+    MariaDB --> PV["Persistent Volume<br/>(hostPath / NFS)"]
 
     subgraph Monitoring
         Prometheus --> Grafana

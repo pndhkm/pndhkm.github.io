@@ -9,23 +9,23 @@
 ```mermaid
 graph TD
     subgraph Admin["Cluster Admin Creates"]
-        SC["StorageClass\n(defines provisioner)"]
-        PV["PersistentVolume\n(actual disk)"]
+        SC["StorageClass<br/>(defines provisioner)"]
+        PV["PersistentVolume<br/>(actual disk)"]
     end
 
     subgraph Dev["Developer Requests"]
-        PVC["PersistentVolumeClaim\n(requests storage)"]
+        PVC["PersistentVolumeClaim<br/>(requests storage)"]
     end
 
     subgraph App["Application Uses"]
-        Pod["Pod\n(mounts PVC as volume)"]
+        Pod["Pod<br/>(mounts PVC as volume)"]
     end
 
     SC -->|dynamic provision| PV
     PVC -->|bound to| PV
     Pod -->|mounts| PVC
 
-    PV -->|backed by| Disk["Physical Storage\n(hostPath / NFS / Ceph)"]
+    PV -->|backed by| Disk["Physical Storage<br/>(hostPath / NFS / Ceph)"]
 ```
 
 ---
@@ -368,13 +368,13 @@ Data survived the pod restart.
 ```mermaid
 graph TD
     subgraph Cluster
-        PVC1["PVC: mariadb-data-0\n(5Gi RWO)"]
-        PVC2["PVC: redis-data\n(1Gi RWO)"]
+        PVC1["PVC: mariadb-data-0<br/>(5Gi RWO)"]
+        PVC2["PVC: redis-data<br/>(1Gi RWO)"]
         SC["StorageClass: nfs-storage"]
     end
 
     subgraph NFS["NFS Server (192.168.90.26)"]
-        NFSExport["/nfs/\n├── mariadb/\n└── redis/"]
+        NFSExport["/nfs/<br/>├── mariadb/<br/>└── redis/"]
     end
 
     PVC1 -->|auto provision| SC

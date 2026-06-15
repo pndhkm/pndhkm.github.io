@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: laravel-config
+  namespace: production
+data:
+  APP_NAME: "SampleApp"
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  APP_URL: "http://app.local"        # https only after TLS is set up (Phase 10)
+  LOG_CHANNEL: "stderr"              # Log to stdout for kubectl logs
+  LOG_LEVEL: "warning"
+  DB_CONNECTION: "mysql"
+  DB_HOST: "mariadb-svc"             # Service name = DNS hostname
+  DB_PORT: "3306"
+  DB_DATABASE: "laravel"
+  
+  # Custom Connection (Used by migrations in this sample-app)
+  SHARED_DB_HOST: "mariadb-svc"
+  SHARED_DB_PORT: "3306"
+  SHARED_DB_DATABASE: "laravel"
+
+  # Waterline Dashboard Access
+  WATERLINE_ALLOW_UNAUTHENTICATED: "true"  # Required to bypass 403 Forbidden in production environment
+
+  CACHE_STORE: "redis"               # Laravel 11+: CACHE_STORE (not CACHE_DRIVER)
+  SESSION_DRIVER: "redis"
+  QUEUE_CONNECTION: "redis"
+  REDIS_HOST: "redis-svc"            # Service name = DNS hostname
+  REDIS_PORT: "6379"

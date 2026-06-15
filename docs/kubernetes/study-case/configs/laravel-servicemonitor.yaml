@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: laravel-monitor
+  namespace: production
+  labels:
+    release: prometheus-stack    # Must match the Prometheus operator release label
+spec:
+  selector:
+    matchLabels:
+      app: laravel
+  endpoints:
+  - port: http                   # Refers to targetPort 8000 defined in laravel-svc
+    path: /metrics
+    interval: 30s

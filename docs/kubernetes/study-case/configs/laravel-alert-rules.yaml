@@ -1,0 +1,51 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: laravel-alerts
+  namespace: production
+  labels:
+    release: prometheus-stack
+spec:
+  groups:
+  - name: laravel.rules
+    rules:
+    # Alert when pod restarts more than 3 times in 5 minutes
+    - alert: LaravelPodCrashLooping
+      expr: |
+        rate(kube_pod_container_status_restarts_total{
+          namespace="production",
+          pod=~"laravel-.*"
+        }[5m]) * 60 * 5 > 3
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Laravel pod is crash looping"
+        description: "Pod {{ $labels.pod }} restarted more than 3 times in 5 minutes"
+
+    # Alert when pod count drops below 2
+    - alert: LaravelReplicasLow
+      expr: |
+        kube_deployment_status_replicas_available{
+          namespace="production",
+          deployment="laravel"
+        } < 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Laravel has fewer than 2 replicas running"
+
+    # Alert when MariaDB is unreachable
+    - alert: MariaDBDown
+      expr: |
+        kube_pod_status_ready{
+          namespace="production",
+          pod=~"mariadb-.*",
+          condition="true"
+        } == 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "MariaDB pod is not ready"

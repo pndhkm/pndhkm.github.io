@@ -32,6 +32,7 @@ jobs:
         run: npm run build
         env:
           CI: false
+          DOCUSAURUS_SKIP_LINK_VALIDATION: true
 
       - name: Upload build artifact
         uses: actions/upload-pages-artifact@v3

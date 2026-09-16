@@ -31,7 +31,7 @@ function HomepageHeader() {
           Hello, I’m Pandu Hakam
         </Heading>
         <p className="hero__subtitle">
-          Network & System Administrator with experience in Linux systems, automation, and IT infrastructure.
+          Site Reliability Engineer | DevOps | Linux System Administrator
         </p>
 
         <div className={styles.iconButtons}>
